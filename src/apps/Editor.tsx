@@ -7,19 +7,50 @@ export default function Editor({ win }: { win: AppWindow }) {
   const os = useOS();
   const [id, setId] = useState(win.fileId);
   const file = os.files.find((f) => f.id === id);
-  const [text, setText] = useState(file?.content || "");
+  const [text, setText] = useState("");
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [loading, setLoading] = useState(Boolean(win.fileId));
+  useEffect(() => {
+    if (!win.fileId) return;
+    let live = true;
+    fs.readContent(win.fileId)
+      .then((t) => {
+        if (live) setText(t);
+      })
+      .catch((e) => {
+        if (live) {
+          setError(e.message);
+          setLoadFailed(true);
+        }
+      })
+      .finally(() => {
+        if (live) setLoading(false);
+      });
+    return () => {
+      live = false;
+    };
+  }, [win.fileId]);
   const [name, setName] = useState(file?.name || "Untitled.txt");
   const [dirty, setDirty] = useState(false);
   const [wrap, setWrap] = useState(true);
   const [error, setError] = useState("");
   async function save() {
+    if (loading || loadFailed) return;
     try {
-      if (file) {
-        if (name !== file.name) await fs.rename(file.id, name);
-        await fs.put({ ...file, name, content: text, modified: Date.now() });
+      const current = id
+        ? (await fs.allFiles()).find((f) => f.id === id)
+        : undefined;
+      if (id && !current)
+        throw Error(
+          "This document was removed. Create a new document to save a copy.",
+        );
+      if (current) {
+        if (name !== current.name) await fs.rename(current.id, name);
+        await fs.put({ ...current, name, content: text, modified: Date.now() });
       } else {
         const f = await fs.create(
-          "documents",
+          os.files.find((f) => f.kind === "folder" && f.name === "Documents")
+            ?.id || fs.ROOT,
           name,
           "file",
           text,
@@ -66,13 +97,18 @@ export default function Editor({ win }: { win: AppWindow }) {
         <button aria-label="Toggle word wrap" onClick={() => setWrap(!wrap)}>
           <WrapText size={17} />
         </button>
-        <button className="primary small" onClick={() => void save()}>
+        <button
+          className="primary small"
+          disabled={loading}
+          onClick={() => void save()}
+        >
           <Save size={15} />
           Save
         </button>
       </div>
       {error && <div className="inline-error">{error}</div>}
       <textarea
+        disabled={loading || loadFailed}
         aria-label="Document content"
         spellCheck={false}
         style={{ whiteSpace: wrap ? "pre-wrap" : "pre" }}

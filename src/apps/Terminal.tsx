@@ -28,7 +28,7 @@ export default function Terminal() {
         .match(/"[^"]*"|'[^']*'|\S+/g)
         ?.map((t) => t.replace(/^['"]|['"]$/g, "")) || [];
     const [cmd, ...args] = tokens;
-    let files = await fs.allFiles();
+    let files = os.files;
     const resolve = (p: string) => fs.resolvePath(files, cwd, p);
     const destination = (p: string) => {
       const parts = p.split("/");
@@ -39,6 +39,7 @@ export default function Terminal() {
       };
     };
     try {
+      files = await fs.allFiles();
       switch (cmd) {
         case undefined:
           return;
@@ -79,15 +80,17 @@ export default function Terminal() {
           break;
         }
         case "cat": {
+          if (!args[0]) throw Error("Specify a file to read");
           const f = resolve(args[0]);
           if (f.kind === "folder") throw Error("Is a directory");
-          out = f.content;
+          out = await fs.readContent(f.id);
           break;
         }
         case "echo": {
           const i = args.indexOf(">");
           if (i < 0) out = args.join(" ");
           else {
+            if (!args[i + 1]) throw Error("Specify a destination file");
             const d = destination(args[i + 1]);
             const f = files.find(
               (f) => f.parent === d.parent && f.name === d.name,
@@ -129,13 +132,7 @@ export default function Terminal() {
             if (cmd === "cp") {
               if (src.kind === "folder")
                 throw Error("Copy folders to an existing directory");
-              await fs.create(
-                d.parent,
-                d.name,
-                src.kind,
-                src.content,
-                src.mime,
-              );
+              await fs.transfer(src.id, d.parent, true, d.name);
             } else {
               await fs.transfer(src.id, d.parent);
               await fs.rename(src.id, d.name);
@@ -150,15 +147,15 @@ export default function Terminal() {
           out = new Date().toString();
           break;
         case "whoami":
-          out = "alex";
+          out = os.user.email;
           break;
         case "neofetch":
           out =
-            "     ◉  ORBIT\n     │  Your space, reimagined\n\nOS       Orbit Browser Desktop 1.0\nHost     " +
+            "     ◉  ORBIT\n     │  Your space, reimagined\n\nOS       Orbit Cloud Desktop 2.0\nHost     " +
             navigator.platform +
-            "\nShell    orbit-sh\nStorage  IndexedDB · " +
+            "\nShell    orbit-sh\nStorage  Hosted private files · " +
             files.length +
-            " items\nApps     12 built-in\nTheme    " +
+            " items\nApps     15 built-in\nTheme    " +
             os.preferences.theme;
           break;
         default:
@@ -169,7 +166,7 @@ export default function Terminal() {
     }
     setLines((l) => [
       ...l,
-      `alex@orbit ${fs.pathOf(files, cwd)} $ ${raw}`,
+      `${os.user.name.split(" ")[0]}@orbit ${fs.pathOf(files, cwd)} $ ${raw}`,
       out,
     ]);
   }
@@ -190,7 +187,7 @@ export default function Terminal() {
         }}
       >
         <span>
-          alex@orbit <b>{fs.pathOf(os.files, cwd)}</b> $
+          {os.user.name.split(" ")[0]}@orbit <b>{fs.pathOf(os.files, cwd)}</b> $
         </span>
         <input
           id="terminal-input"

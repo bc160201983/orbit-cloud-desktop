@@ -1,0 +1,200 @@
+/* Hosted applications share the desktop window manager and never replace the shell. */
+.cloud-app.desktop-cloud-app {
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+  color: var(--c-text);
+  background: var(--c-bg);
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  display: flex;
+}
+.desktop-cloud-app h1 {
+  font-size: 25px;
+}
+.hosted-files .hosted-sidebar {
+  width: 190px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--c-line);
+  background: var(--c-surface);
+  display: flex;
+  flex-direction: column;
+  padding: 22px 12px 16px;
+  gap: 18px;
+}
+.hosted-brand {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 0 8px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+.hosted-brand > svg {
+  color: var(--c-primary);
+}
+.hosted-brand small {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--c-muted);
+  margin-top: 4px;
+}
+.hosted-sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.hosted-sidebar nav button,
+.hosted-new {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--c-muted);
+  font-size: 12px;
+  text-align: left;
+}
+.hosted-sidebar nav button.active,
+.hosted-tabs button.active {
+  color: var(--c-primary);
+  background: var(--c-blue-soft);
+  font-weight: 600;
+}
+.hosted-storage {
+  margin-top: auto;
+  padding: 12px 8px;
+  color: var(--c-muted);
+  font-size: 11px;
+}
+.hosted-storage strong {
+  margin-left: 7px;
+  color: var(--c-text);
+  font-size: 11px;
+}
+.hosted-storage .cloud-storage-bar {
+  margin: 12px 0 8px;
+}
+.hosted-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.hosted-toolbar {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 24px;
+  border-bottom: 1px solid var(--c-line);
+  background: var(--c-surface);
+}
+.hosted-toolbar > span {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  font-size: 11px;
+  color: var(--c-muted);
+}
+.hosted-toolbar label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--c-muted);
+}
+.hosted-toolbar input {
+  width: 190px;
+  min-width: 0;
+  font-size: 12px;
+  padding: 7px 10px;
+}
+.hosted-content {
+  overflow: auto;
+  min-height: 0;
+  flex: 1;
+  padding: 24px;
+}
+.cloud-tool {
+  flex-direction: column;
+}
+.hosted-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--c-line);
+  background: var(--c-surface);
+}
+.hosted-tabs button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 14px;
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  color: var(--c-muted);
+}
+.desktop-cloud-app .cloud-modal-backdrop {
+  z-index: 1500;
+}
+.desktop-cloud-toast {
+  z-index: 1501;
+  bottom: 105px;
+}
+.desktop-cloud-app .file-workspace {
+  min-height: 100%;
+}
+@media (max-width: 700px) {
+  .hosted-files .hosted-sidebar {
+    width: 58px;
+    padding: 14px 5px;
+  }
+  .hosted-sidebar nav button {
+    justify-content: center;
+    padding: 11px 8px;
+  }
+  .hosted-sidebar nav button span,
+  .hosted-brand span,
+  .hosted-storage,
+  .hosted-new {
+    display: none;
+  }
+  .hosted-brand {
+    padding: 0;
+    justify-content: center;
+  }
+  .hosted-content {
+    padding: 16px;
+  }
+  .hosted-toolbar {
+    padding: 9px 12px;
+  }
+  .hosted-toolbar > span {
+    display: none;
+  }
+  .hosted-toolbar label {
+    width: 100%;
+  }
+  .hosted-toolbar input {
+    width: 100%;
+  }
+  .hosted-tabs {
+    padding: 10px;
+  }
+  .desktop-cloud-app h1 {
+    font-size: 21px;
+  }
+}
+
+.cloud-dialog-host {
+  display: contents !important;
+}
+.cloud-dialog-host .cloud-modal-backdrop {
+  z-index: 1500;
+}

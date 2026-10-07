@@ -1,3 +1,4 @@
+import { useAccountKey } from "../core/persistence";
 import { useState, useEffect } from "react";
 import {
   ArrowLeft,
@@ -29,10 +30,11 @@ interface Note {
   updated: number;
 }
 export function Notes() {
+  const storageKey = useAccountKey("orbit-notes");
   const [notes, setNotes] = useState<Note[]>(() => {
     try {
       return (
-        JSON.parse(localStorage.getItem("orbit-notes") || "null") || [
+        JSON.parse(localStorage.getItem(storageKey) || "null") || [
           {
             id: "first",
             title: "Little things, big days",
@@ -48,7 +50,7 @@ export function Notes() {
   const [selected, setSelected] = useState(notes[0]?.id || "");
   const [query, setQuery] = useState("");
   useEffect(
-    () => localStorage.setItem("orbit-notes", JSON.stringify(notes)),
+    () => localStorage.setItem(storageKey, JSON.stringify(notes)),
     [notes],
   );
   const note = notes.find((n) => n.id === selected);

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import type { AppId, AppWindow } from "./types";
-import { readSaved } from "./persistence";
+import { readSaved, useAccountKey } from "./persistence";
 import { appById } from "./registry";
 export function useWindowManager() {
+  const positionKey = useAccountKey("orbit-positions");
   const [windows, setWindows] = useState<AppWindow[]>([]);
   const open = (app: AppId, fileId?: string) => {
     setWindows((ws) => {
@@ -13,16 +14,21 @@ export function useWindowManager() {
           w.id === existing.id ? { ...w, minimized: false, z } : w,
         );
       const positions = readSaved<Record<string, Partial<AppWindow>>>(
-        "orbit-positions",
+        positionKey,
         {},
       );
       const p = positions[app] || {};
       const width = Math.min(
-        p.width ?? (app === "calculator" ? 340 : app === "files" ? 900 : 800),
+        p.width ??
+          (app === "calculator"
+            ? 340
+            : ["files", "admin", "sharing", "account"].includes(app)
+              ? 1050
+              : 800),
         innerWidth - 32,
       );
       const height = Math.min(
-        p.height ?? (app === "calculator" ? 510 : 560),
+        p.height ?? (app === "calculator" ? 510 : 650),
         innerHeight - 120,
       );
       return [
@@ -62,7 +68,7 @@ export function useWindowManager() {
         const next = { ...w, ...patch };
         if ("x" in patch || "width" in patch) {
           const positions = readSaved<Record<string, Partial<AppWindow>>>(
-            "orbit-positions",
+            positionKey,
             {},
           );
           positions[w.app] = {
@@ -71,7 +77,7 @@ export function useWindowManager() {
             width: next.width,
             height: next.height,
           };
-          localStorage.setItem("orbit-positions", JSON.stringify(positions));
+          localStorage.setItem(positionKey, JSON.stringify(positions));
         }
         return next;
       }),

@@ -8,13 +8,9 @@ import "@fontsource/manrope/latin-600.css";
 import "@fontsource/manrope/latin-700.css";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { DesktopProvider } from "./core/store";
-import Desktop from "./components/Desktop";
-import "./style.css";
+import CloudApp from "./cloud/CloudApp";
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <DesktopProvider>
-      <Desktop />
-    </DesktopProvider>
+    <CloudApp />
   </React.StrictMode>,
 );

@@ -5,3 +5,8 @@ test-results
 
 *.tsbuildinfo
 tests/*.png
+
+.orbit/
+.env
+.env.*
+!.env.example

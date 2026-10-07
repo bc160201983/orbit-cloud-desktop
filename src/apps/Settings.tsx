@@ -171,13 +171,13 @@ export default function Settings() {
             <h2>Orbit</h2>
             <p>Your space, reimagined.</p>
             <div className="setting-row">
-              Version<span>1.0.0</span>
+              Version<span>2.0.0</span>
             </div>
             <div className="setting-row">
               Platform<span>Browser desktop</span>
             </div>
             <div className="setting-row">
-              Storage<span>Local IndexedDB</span>
+              Storage<span>Private cloud drive</span>
             </div>
             <p className="muted">
               Built with React, TypeScript, and a little room to dream.

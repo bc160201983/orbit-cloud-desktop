@@ -1,0 +1,10 @@
+node_modules
+dist
+.git
+.orbit
+.env
+.env.*
+test-results
+playwright-report
+tests
+*.tsbuildinfo

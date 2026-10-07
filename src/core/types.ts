@@ -10,7 +10,10 @@ export type AppId =
   | "browser"
   | "monitor"
   | "notes"
-  | "store";
+  | "store"
+  | "sharing"
+  | "account"
+  | "admin";
 export interface VFile {
   id: string;
   parent: string | null;
@@ -19,6 +22,7 @@ export interface VFile {
   content: string;
   mime: string;
   modified: number;
+  size?: number;
 }
 export interface AppWindow {
   id: string;

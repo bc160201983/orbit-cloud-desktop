@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: orbit-cloud
+    runtime: node
+    plan: starter
+    buildCommand: npm ci --no-audit --no-fund && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    disk:
+      name: orbit-storage
+      mountPath: /var/data/orbit
+      sizeGB: 10
+    envVars:
+      - key: NODE_VERSION
+        value: 24.19.0
+      - key: NODE_ENV
+        value: production
+      - key: ORBIT_DATA_DIR
+        value: /var/data/orbit
+      - key: ORBIT_SETUP_TOKEN
+        generateValue: true
+      - key: APP_ORIGIN
+        sync: false
+      - key: TRUST_PROXY
+        value: 1

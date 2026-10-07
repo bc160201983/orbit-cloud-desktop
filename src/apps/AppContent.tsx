@@ -1,5 +1,6 @@
 import type { AppWindow } from "../core/types";
-import Files from "./Files";
+import CloudFiles from "./CloudFiles";
+import { SharingApp, AccountApp, AdminApp } from "./CloudTools";
 import Settings from "./Settings";
 import Terminal from "./Terminal";
 import Editor from "./Editor";
@@ -11,8 +12,11 @@ import { Monitor } from "./Monitor";
 import { Store } from "./Store";
 export default function AppContent({ win }: { win: AppWindow }) {
   switch (win.app) {
+    case "sharing": return <SharingApp/>;
+    case "account": return <AccountApp/>;
+    case "admin": return <AdminApp/>;
     case "files":
-      return <Files win={win} />;
+      return <CloudFiles win={win} />;
     case "settings":
       return <Settings />;
     case "terminal":

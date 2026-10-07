@@ -41,6 +41,15 @@ function AppIcon({ id, size = 24 }: { id: AppId; size?: number }) {
 }
 export default function Desktop() {
   const os = useOS();
+  const pinned: AppId[] = [
+    "files",
+    "sharing",
+    "browser",
+    "notes",
+    "terminal",
+    "settings",
+    "account",
+  ];
   const [clock, setClock] = useState(new Date());
   const [panel, setPanel] = useState<
     "launcher" | "search" | "quick" | "notifications" | null
@@ -87,8 +96,10 @@ export default function Desktop() {
   };
   const wallpaper =
     wallpapers.find((w) => w.id === os.preferences.wallpaper) || wallpapers[0];
-  const results = apps.filter((a) =>
-    a.name.toLowerCase().includes(query.toLowerCase()),
+  const results = apps.filter(
+    (a) =>
+      (a.id !== "admin" || os.user.role === "admin") &&
+      a.name.toLowerCase().includes(query.toLowerCase()),
   );
   const fileResults = query
     ? os.files
@@ -127,10 +138,13 @@ export default function Desktop() {
       <header className="topbar">
         <button className="brand" onClick={() => toggle("launcher")}>
           <span className="orbit-logo">◉</span>
-          <b>orbit</b>
+          <b>{os.workspaceName}</b>
         </button>
         <div className="topbar-left">
-          <span>Personal workspace</span>
+          <span>
+            Cloud desktop ·{" "}
+            {os.user.role === "admin" ? "Administrator" : "Personal workspace"}
+          </span>
           <span className="topbar-divider" />
           <span className="workspace-dot" />
           Everything, in its place.
@@ -164,9 +178,10 @@ export default function Desktop() {
       <div className="desktop-greeting">
         <div className="eyebrow">A LITTLE SPACE. A WORLD OF POSSIBILITIES.</div>
         <h1>
-          {greeting}, Alex<span>✦</span>
+          {greeting}, {os.user.name.split(" ")[0]}
+          <span>✦</span>
         </h1>
-        <p>Make room for what matters.</p>
+        <p>Your desktop. Your files. Connected.</p>
         <div className="greeting-date">
           {clock.toLocaleDateString(undefined, {
             weekday: "long",
@@ -184,7 +199,14 @@ export default function Desktop() {
       </div>
       {showIcons && (
         <div className="desktop-icons">
-          {(["files", "notes", "browser", "store"] as AppId[]).map((id) => (
+          {(
+            [
+              "files",
+              "sharing",
+              "notes",
+              ...(os.user.role === "admin" ? ["admin"] : ["account"]),
+            ] as AppId[]
+          ).map((id) => (
             <button
               key={id}
               onDoubleClick={() => open(id)}
@@ -282,14 +304,14 @@ export default function Desktop() {
                 </div>
               )}
               <div className="launcher-footer">
-                <div className="avatar">A</div>
+                <div className="avatar">{os.user.name[0].toUpperCase()}</div>
                 <div>
-                  <strong>Alex Morgan</strong>
+                  <strong>{os.user.name}</strong>
                   <small>Your personal space</small>
                 </div>
                 <button
                   aria-label="Open Settings"
-                  onClick={() => open("settings")}
+                  onClick={() => open("account")}
                 >
                   <Settings size={19} />
                 </button>
@@ -308,7 +330,7 @@ export default function Desktop() {
                 <h3>Little adjustments.</h3>
                 <button
                   aria-label="Open Settings"
-                  onClick={() => open("settings")}
+                  onClick={() => open("account")}
                 >
                   <Settings size={18} />
                 </button>
@@ -546,18 +568,7 @@ export default function Desktop() {
             <Search size={23} />
           </button>
           <span className="dock-divider" />
-          {(
-            [
-              "files",
-              "browser",
-              "notes",
-              "music",
-              "images",
-              "terminal",
-              "store",
-              "settings",
-            ] as AppId[]
-          ).map((id) => {
+          {pinned.map((id) => {
             const running = os.windows.filter((w) => w.app === id);
             return (
               <button
@@ -572,7 +583,10 @@ export default function Desktop() {
                     w.z === Math.max(...os.windows.map((x) => x.z))
                   )
                     os.patch(w.id, { minimized: true });
-                  else os.open(id);
+                  else if (w) {
+                    os.patch(w.id, { minimized: false });
+                    os.focus(w.id);
+                  } else os.open(id);
                 }}
               >
                 <AppIcon id={id} size={25} />
@@ -581,26 +595,17 @@ export default function Desktop() {
             );
           })}
           {os.windows
-            .filter(
-              (w) =>
-                ![
-                  "files",
-                  "browser",
-                  "notes",
-                  "music",
-                  "images",
-                  "terminal",
-                  "store",
-                  "settings",
-                ].includes(w.app),
-            )
+            .filter((w) => !pinned.includes(w.app))
             .filter((w, i, arr) => arr.findIndex((x) => x.app === w.app) === i)
             .map((w) => (
               <button
                 key={w.app}
                 className="dock-app running"
                 aria-label={`Open ${appById(w.app).name}`}
-                onClick={() => os.open(w.app)}
+                onClick={() => {
+                  os.patch(w.id, { minimized: false });
+                  os.focus(w.id);
+                }}
               >
                 <AppIcon id={w.app} size={25} />
               </button>
@@ -651,6 +656,7 @@ export default function Desktop() {
             </p>
             <div>
               <button onClick={() => setConfirmPower(false)}>Keep going</button>
+              <button onClick={() => void os.logout()}>Sign out</button>
               <button className="primary" onClick={() => location.reload()}>
                 Restart desktop
               </button>

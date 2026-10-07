@@ -68,11 +68,9 @@ export function Monitor() {
         </div>
         <div>
           <Leaf />
-          <small>Virtual storage</small>
+          <small>Hosted storage</small>
           <strong>
-            {(
-              files.reduce((n, f) => n + new Blob([f.content]).size, 0) / 1024
-            ).toFixed(1)}{" "}
+            {(files.reduce((n, f) => n + (f.size || 0), 0) / 1024).toFixed(1)}{" "}
             KB
           </strong>
         </div>

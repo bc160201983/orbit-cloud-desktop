@@ -1,5 +1,8 @@
 import {
   Folder,
+  Share2,
+  UserRound,
+  ShieldCheck,
   Settings,
   Terminal,
   FileText,
@@ -14,6 +17,27 @@ import {
 } from "lucide-react";
 import type { AppId } from "./types";
 export const apps = [
+  {
+    id: "sharing",
+    name: "Sharing",
+    icon: Share2,
+    color: "#678ef0",
+    category: "Cloud",
+  },
+  {
+    id: "account",
+    name: "Account",
+    icon: UserRound,
+    color: "#7f9cbd",
+    category: "Cloud",
+  },
+  {
+    id: "admin",
+    name: "Admin Console",
+    icon: ShieldCheck,
+    color: "#8771c1",
+    category: "Cloud",
+  },
   {
     id: "files",
     name: "Files",

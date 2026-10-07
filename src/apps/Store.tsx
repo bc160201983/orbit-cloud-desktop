@@ -1,3 +1,4 @@
+import { useAccountKey } from "../core/persistence";
 import { useState, useEffect } from "react";
 import {
   ArrowLeft,
@@ -23,11 +24,12 @@ import {
 import { useOS } from "../core/store";
 import { apps } from "../core/registry";
 export function Store() {
+  const storageKey = useAccountKey("orbit-store");
   const os = useOS();
   const [tab, setTab] = useState("Discover");
   const [installed, setInstalled] = useState<string[]>(() => {
     try {
-      return JSON.parse(localStorage.getItem("orbit-store") || "[]");
+      return JSON.parse(localStorage.getItem(storageKey) || "[]");
     } catch {
       return [];
     }
@@ -106,7 +108,7 @@ export function Store() {
                     if (!installed.includes(a.name)) {
                       const next = [...installed, a.name];
                       setInstalled(next);
-                      localStorage.setItem("orbit-store", JSON.stringify(next));
+                      localStorage.setItem(storageKey, JSON.stringify(next));
                       os.notify(
                         "Added to your collection",
                         `${a.name} is a catalog preview. Executable apps are available below.`,
@@ -138,13 +140,15 @@ export function Store() {
         <>
           <h1>Your essentials.</h1>
           <div className="installed-grid">
-            {apps.map((a) => (
-              <button key={a.id} onClick={() => os.open(a.id)}>
-                <a.icon style={{ color: a.color }} />
-                <span>{a.name}</span>
-                <ExternalLink size={14} />
-              </button>
-            ))}
+            {apps
+              .filter((a) => a.id !== "admin" || os.user.role === "admin")
+              .map((a) => (
+                <button key={a.id} onClick={() => os.open(a.id)}>
+                  <a.icon style={{ color: a.color }} />
+                  <span>{a.name}</span>
+                  <ExternalLink size={14} />
+                </button>
+              ))}
           </div>
           <h3>Preview collection</h3>
           {installed.length ? (
@@ -155,7 +159,7 @@ export function Store() {
                   onClick={() => {
                     const next = installed.filter((x) => x !== n);
                     setInstalled(next);
-                    localStorage.setItem("orbit-store", JSON.stringify(next));
+                    localStorage.setItem(storageKey, JSON.stringify(next));
                   }}
                 >
                   Remove

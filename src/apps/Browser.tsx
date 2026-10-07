@@ -115,7 +115,7 @@ export function Browser() {
             key={url + reload}
             src={url}
             title="Browser page"
-            sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
+            sandbox="allow-scripts allow-forms allow-popups"
             referrerPolicy="no-referrer"
           />
         </>
