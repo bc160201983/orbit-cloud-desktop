@@ -59,6 +59,27 @@ There are no default accounts or passwords. Tests run with isolated temporary da
 
 **This version needs a full-stack host and persistent disk. Static Vercel/Netlify hosting by itself is insufficient.** A single Node instance serves both the built UI and the API.
 
+### Vercel frontend + persistent Node backend
+
+You can keep the desktop on Vercel while Render (or another persistent Node host) runs accounts, SQLite, and private file storage. Vercel forwards `/api` requests directly to the backend; browser cookies and file URLs remain on the Vercel origin. The proxy uses external rewrites, avoiding a custom serverless function upload limit.
+
+1. Deploy the backend using the Render configuration below, with its persistent disk.
+2. On the backend, set `APP_ORIGIN=https://orbit-cloud-desktop.vercel.app` (or your exact custom frontend domain), `NODE_ENV=production`, and `TRUST_PROXY=1` when using Render. The origin check must allow the frontend's URL.
+3. Configure forwarding with your **actual backend URL**:
+
+   ```sh
+   npm run configure:vercel -- https://your-backend.onrender.com
+   ```
+
+4. Commit the generated `vercel.json` and redeploy the Vercel project. The checked-in initial config serves the desktop and public-share pages; it has no backend forwarding until this command is run with your backend URL.
+5. Confirm `https://orbit-cloud-desktop.vercel.app/api/health` returns `{"ok":true}`. Open the desktop, enter the backend's private setup token, and create your administrator. Share links use the Vercel domain.
+
+The backend URL is public configuration, not a credential. Never put the setup token or database files in `vercel.json`. If you later change the Vercel domain, update the backend's `APP_ORIGIN` as well.
+
+#### “Unexpected token” or “A little connection trouble”
+
+A frontend-only Vercel deployment does not start `server/index.mjs`. Without API forwarding, `/api/auth/status` returns an error page instead of JSON. Redeploying the frontend alone cannot enable login, uploads, or sharing. Complete the backend deployment and forwarding steps above. Do not store SQLite or private uploads in Vercel's temporary filesystem.
+
 ### Render
 
 1. Push this version to GitHub and create a Render Blueprint from the repository. `render.yaml` describes a paid web service with a 10 GB persistent disk. Review the plan/cost before provisioning.

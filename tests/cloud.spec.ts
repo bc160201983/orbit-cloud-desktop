@@ -337,3 +337,23 @@ test.describe.serial("hosted WebOS desktop", () => {
     }
   });
 });
+
+test("unavailable API shows a useful error and retry recovers", async ({
+  page,
+}) => {
+  await page.route("**/api/auth/status", (route) =>
+    route.fulfill({
+      status: 404,
+      contentType: "text/plain",
+      body: "The page could not be found",
+    }),
+  );
+  await page.goto("/");
+  await expect(
+    page.getByText(/The workspace server is unavailable/),
+  ).toBeVisible();
+  await expect(page.getByText(/Unexpected token/)).toHaveCount(0);
+  await page.unroute("**/api/auth/status");
+  await page.getByRole("button", { name: "Try again" }).click();
+  await expect(page.locator(".cloud-login")).toBeVisible();
+});
