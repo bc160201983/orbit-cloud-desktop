@@ -4,6 +4,28 @@ A browser-based operating system with a modern desktop, draggable application wi
 
 **The WebOS desktop is the main experience after login.** Cloud Drive, Sharing, Account, and Admin Console open inside desktop windows. The terminal, editor, and media apps use the same authenticated hosted filesystem as Cloud Drive.
 
+## Screenshots
+
+### Desktop and cloud drive
+
+The WebOS desktop with hosted files, private storage, and sharing in a snapped window.
+
+![Orbit desktop with Cloud Drive in dark mode](docs/images/desktop.png)
+
+### Administrator console
+
+Manage workspace members, files, sharing policies, storage limits, and settings from a desktop app.
+
+![Orbit administrator console inside a desktop window](docs/images/admin-console.png)
+
+### Mobile layout
+
+The same desktop and hosted filesystem adapt to smaller screens.
+
+<img src="docs/images/mobile.png" alt="Orbit Cloud Drive and desktop dock on mobile" width="390" />
+
+Screenshots use demo accounts and test data.
+
 ## What works
 
 - Member registration, member login, separate administrator login, profile changes, and password changes.
